@@ -59,6 +59,41 @@ PUBLIC void resume(struct process *proc)
 		sched(proc);
 }
 
+
+int computePriotityCondition(struct process p, struct process next){
+
+	int typePrio = 2;
+	int condition = 0;
+
+	switch (typePrio)
+	{
+	case 1:
+		if (p.counter > next.counter){
+			condition = 1;
+		}else {
+			condition = 0;
+		}
+		break;
+
+	case 2:
+		if (p.nice + p.priority < next.priority + next.nice || 
+		((p.nice + p.priority == next.priority + next.nice) && 
+		(p.counter > next.counter)))
+		{
+			condition = 1;
+		}else{
+			condition = 0;
+		}
+		break;
+	
+	default:
+		condition = 0;
+		break;
+	}
+
+	return condition;
+}
+
 /**
  * @brief Yields the processor.
  */
@@ -98,18 +133,35 @@ PUBLIC void yield(void)
 		 * Process with higher
 		 * waiting time found.
 		 */
-		if (p->counter > next->counter)
-		{
+
+		if(computePriotityCondition(*p, *next)==1){
 			next->counter++;
 			next = p;
+		}else{
+			p->counter++;
 		}
-			
+
+		// if (p->counter > next->counter){
+		// 	next->counter++;
+		// 	next = p;
+		// }else {
+		// 	p->counter++;
+		// }
+		
+		// if (p->nice + p->priority < next->priority + next->nice || 
+		// 	((p->nice + p->priority == next->priority + next->nice) && 
+		// 	(p->counter > next->counter)))
+		// {
+		// 	next->counter++;
+		// 	next = p;
+		// }else{
+		// 	p->counter++;
+		// }
+
 		/*
 		 * Increment waiting
 		 * time of process.
 		 */
-		else
-			p->counter++;
 	}
 	
 	/* Switch to next process. */
