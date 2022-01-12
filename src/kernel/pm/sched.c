@@ -60,44 +60,7 @@ PUBLIC void resume(struct process *proc)
 }
 
 
-int computePriotityCondition(struct process p, struct process next){
-
-	int typePrio = 2;
-	int condition = 0;
-
-	switch (typePrio)
-	{
-	case 1:
-		if (p.counter > next.counter){
-			condition = 1;
-		}else {
-			condition = 0;
-		}
-		break;
-
-	case 2:
-		if (p.nice + p.priority < next.priority + next.nice || 
-		((p.nice + p.priority == next.priority + next.nice) && 
-		(p.counter > next.counter)))
-		{
-			condition = 1;
-		}else{
-			condition = 0;
-		}
-		break;
-	
-	default:
-		condition = 0;
-		break;
-	}
-
-	return condition;
-}
-
-/**
- * @brief Yields the processor.
- */
-PUBLIC void yield(void)
+PUBLIC void yield1(void)
 {
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
@@ -134,29 +97,72 @@ PUBLIC void yield(void)
 		 * waiting time found.
 		 */
 
-		if(computePriotityCondition(*p, *next)==1){
+		if (p->counter > next->counter){
+			next->counter++;
+			next = p;
+		}else {
+			p->counter++;
+		}
+		/*
+		 * Increment waiting
+		 * time of process.
+		 */
+	}
+	
+	/* Switch to next process. */
+	next->priority = PRIO_USER;
+	next->state = PROC_RUNNING;
+	next->counter = PROC_QUANTUM;
+	if (curr_proc != next)
+		switch_to(next);
+}
+
+PUBLIC void yield2(void)
+{
+	struct process *p;    /* Working process.     */
+	struct process *next; /* Next process to run. */
+
+	/* Re-schedule process for execution. */
+	if (curr_proc->state == PROC_RUNNING)
+		sched(curr_proc);
+
+	/* Remember this process. */
+	last_proc = curr_proc;
+
+	/* Check alarm. */
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip invalid processes. */
+		if (!IS_VALID(p))
+			continue;
+		
+		/* Alarm has expired. */
+		if ((p->alarm) && (p->alarm < ticks))
+			p->alarm = 0, sndsig(p, SIGALRM);
+	}
+
+	/* Choose a process to run next. */
+	next = IDLE;
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip non-ready process. */
+		if (p->state != PROC_READY)
+			continue;
+		
+		/*
+		 * Process with higher
+		 * waiting time found.
+		 */
+
+		if (p->nice + p->priority < next->priority + next->nice || 
+			((p->nice + p->priority == next->priority + next->nice) && 
+			(p->counter > next->counter)))
+		{
 			next->counter++;
 			next = p;
 		}else{
 			p->counter++;
 		}
-
-		// if (p->counter > next->counter){
-		// 	next->counter++;
-		// 	next = p;
-		// }else {
-		// 	p->counter++;
-		// }
-		
-		// if (p->nice + p->priority < next->priority + next->nice || 
-		// 	((p->nice + p->priority == next->priority + next->nice) && 
-		// 	(p->counter > next->counter)))
-		// {
-		// 	next->counter++;
-		// 	next = p;
-		// }else{
-		// 	p->counter++;
-		// }
 
 		/*
 		 * Increment waiting
@@ -170,4 +176,30 @@ PUBLIC void yield(void)
 	next->counter = PROC_QUANTUM;
 	if (curr_proc != next)
 		switch_to(next);
+}
+
+void swap(int n){
+	switch (n)
+	{
+	case 1:
+	yield1();
+		break;
+	
+	case 2:
+	yield2();
+		break;
+
+	default:
+		break;
+	}
+
+	return;
+}
+
+/**
+ * @brief Yields the processor.
+ */
+PUBLIC void yield(void)
+{
+	swap(1);
 }
