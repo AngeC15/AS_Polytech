@@ -58,7 +58,11 @@ PUBLIC void resume(struct process *proc)
 	if (proc->state == PROC_STOPPED)
 		sched(proc);
 }
+/*
 
+Seems to be the FIFO queue
+
+*/
 
 PUBLIC void yield1(void)
 {
@@ -116,7 +120,11 @@ PUBLIC void yield1(void)
 	if (curr_proc != next)
 		switch_to(next);
 }
+/*
 
+Implementation for nice priority
+
+*/
 PUBLIC void yield2(void)
 {
 	struct process *p;    /* Working process.     */
