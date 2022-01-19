@@ -117,6 +117,7 @@ PUBLIC void yield1(void)
 		switch_to(next);
 }
 
+// Priority
 PUBLIC void yield2(void)
 {
 	struct process *p;    /* Working process.     */
@@ -178,6 +179,67 @@ PUBLIC void yield2(void)
 		switch_to(next);
 }
 
+// Fair Share
+
+PUBLIC void yield5(void)
+{
+	struct process *p;    /* Working process.     */
+	struct process *next; /* Next process to run. */
+
+	/* Re-schedule process for execution. */
+	if (curr_proc->state == PROC_RUNNING)
+		sched(curr_proc);
+
+	/* Remember this process. */
+	last_proc = curr_proc;
+
+	/* Check alarm. */
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip invalid processes. */
+		if (!IS_VALID(p))
+			continue;
+		
+		/* Alarm has expired. */
+		if ((p->alarm) && (p->alarm < ticks))
+			p->alarm = 0, sndsig(p, SIGALRM);
+	}
+
+	/* Choose a process to run next. */
+	next = IDLE;
+
+	int nProcs = LAST_PROC - FIRST_PROC + 1;
+
+	if(p+1 > LAST_PROC){
+		p = FIRST_PROC;
+	}else{
+		p = curr_proc+1;;
+	}
+
+	for(int i = 0; i < nProcs; i++){
+
+		if (p->state != PROC_READY){
+
+			if(p+1 > LAST_PROC){
+				p = FIRST_PROC;
+			}else{
+				p++;
+			}
+			continue;
+		}
+		next = p;
+		break;
+	}
+
+	
+	/* Switch to next process. */
+	next->priority = PRIO_USER;
+	next->state = PROC_RUNNING;
+	next->counter = PROC_QUANTUM;
+	if (curr_proc != next)
+		switch_to(next);
+}
+
 void swap(int n){
 	switch (n)
 	{
@@ -187,6 +249,10 @@ void swap(int n){
 	
 	case 2:
 	yield2();
+		break;
+	
+	case 5:
+	yield5();
 		break;
 
 	default:
@@ -201,5 +267,5 @@ void swap(int n){
  */
 PUBLIC void yield(void)
 {
-	swap(1);
+	swap(5);
 }
