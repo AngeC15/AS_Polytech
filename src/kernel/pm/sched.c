@@ -23,6 +23,12 @@
 #include <nanvix/hal.h>
 #include <nanvix/pm.h>
 #include <signal.h>
+#include <nanvix/klib.h>
+
+#define PRIORITY_MAX 140
+#define NICE_MAX 40
+#define PRIORITY_COEFF 1.0
+#define NICE_COEFF 1.0
 
 /**
  * @brief Schedules a process to execution.
@@ -144,31 +150,60 @@ PUBLIC void yield2(void)
 
 	/* Choose a process to run next. */
 	next = IDLE;
+	next->counter = 0;
+	float ratio = 0.0;
+	float nextratio = 0.0;
+
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
 		/* Skip non-ready process. */
 		if (p->state != PROC_READY)
 			continue;
 		
-		/*
-		 * Process with higher
-		 * waiting time found.
-		 */
+		/*ratio and next ratio are both an average between nice and priority
+		We chose to focus on both. None of the two has priority over the other.
+		In order to focus on the user changes, you just need to increase NICE_COEFF 
+		at the top of the program.
+		*/
+		ratio = ((float) PRIORITY_COEFF * ((p->priority - 40) / -PRIORITY_MAX) - (float) NICE_COEFF * (p->nice / NICE_MAX)) / -2;
+		nextratio = ((float) PRIORITY_COEFF *((next->priority - 40) / -PRIORITY_MAX) - (float) NICE_COEFF * (p->nice / NICE_MAX)) / -2;
 
-		if (p->nice + p->priority < next->priority + next->nice || 
-			((p->nice + p->priority == next->priority + next->nice) && 
-			(p->counter > next->counter)))
+		/*process with highest ratio will be the next*/
+		if (ratio < nextratio)
 		{
-			next->counter++;
+			if (next != IDLE)
+				next->counter++;
 			next = p;
-		}else{
-			p->counter++;
 		}
 
-		/*
-		 * Increment waiting
-		 * time of process.
-		 */
+		/*(if ratio are both the same),
+		the process that has waited the longest will be the next.*/
+		else if (ratio == nextratio)
+		{
+			if (p->counter > next->counter)
+			{
+				if (next != IDLE){
+					next->counter++;
+				}
+				next = p;
+			}
+
+			/*
+         	* Increment waiting
+         	* time of process.
+         	*/
+			else
+			{
+				if (p != IDLE)
+					p->counter++;
+			}
+		}
+
+		else
+		{
+			if (p != IDLE)
+				p->counter++;
+		}
 	}
 	
 	/* Switch to next process. */
