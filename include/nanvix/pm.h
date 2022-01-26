@@ -37,6 +37,8 @@
 	#include <limits.h>
 	#include <signal.h>
 	
+
+	
 	/**
 	 * @name Superuser credentials
 	 */
@@ -205,6 +207,10 @@
 		struct process *next;    /**< Next process in a list. */
 		struct process **chain;  /**< Sleeping chain.         */
 		/**@}*/
+
+		int nbTickets;			 /**< Ticket for lottery scheduling */
+		int ticketAllocated;
+
 	};
 	
 	/* Forward definitions. */

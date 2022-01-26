@@ -31,6 +31,20 @@
 #include <signal.h>
 #include <limits.h>
 
+
+/**
+ * @brief convert the nice priority into a number of ticket
+ * 
+ */
+EXTERN void niceToTicket(struct process *p);
+
+/**
+ * @brief change the number of ticket of all process when one is added
+ * 
+ */
+EXTERN void changeTicket(struct process *p);
+
+
 /**
  * @brief Idle process page directory.
  */
@@ -120,7 +134,12 @@ PUBLIC void pm_init(void)
 	IDLE->alarm = 0;
 	IDLE->next = NULL;
 	IDLE->chain = NULL;
-	
+
+	//for the lottery
+	niceToTicket(IDLE);
+	changeTicket(IDLE);
+
+
 	nprocs++;
 
 	enable_interrupts();

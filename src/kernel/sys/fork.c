@@ -26,6 +26,21 @@
 #include <sys/types.h>
 #include <errno.h>
 
+
+/**
+ * @brief convert the nice priority into a number of ticket
+ * 
+ */
+EXTERN void niceToTicket(struct process *p);
+
+/**
+ * @brief change the number of ticket of all process when one is added
+ * 
+ */
+EXTERN void changeTicket(struct process *p);
+
+
+
 /*
  * Creates a new process.
  */
@@ -154,6 +169,12 @@ found:
 	proc->alarm = 0;
 	proc->next = NULL;
 	proc->chain = NULL;
+
+	/*
+	niceToTicket(proc);
+	changeTicket(proc);
+	*/
+	
 	sched(proc);
 
 	curr_proc->nchildren++;

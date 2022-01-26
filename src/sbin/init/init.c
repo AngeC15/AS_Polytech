@@ -26,6 +26,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+
 /**
  * @brief Init table size.
  */
@@ -167,6 +169,8 @@ int main(int argc, char **argv)
 	((void)argc);
 	((void)argv);
 	
+	printf("Init a ete lance \n");
+
 	/* Read init table. */
 	if (inittab_read())
 		goto out;

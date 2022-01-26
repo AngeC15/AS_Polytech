@@ -22,6 +22,21 @@
 #include <errno.h>
 #include <limits.h>
 
+
+/**
+ * @brief convert the nice priority into a number of ticket
+ * 
+ */
+EXTERN void niceToTicket(struct process *p);
+
+/**
+ * @brief change the number of ticket of all process when one is added
+ * 
+ */
+EXTERN void changeTicket(struct process *p);
+
+
+
 /*
  * Changes the nice value of the calling process.
  */
@@ -39,6 +54,11 @@ PUBLIC int sys_nice(int incr)
 	else if (curr_proc->nice >= 2*NZERO)
 		curr_proc->nice = 2*NZERO - 1;
 	
+	/*
+	niceToTicket(curr_proc);
+	changeTicket(curr_proc);
+	*/
+
 	return (curr_proc->nice);
 }
 

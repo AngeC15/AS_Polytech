@@ -25,6 +25,20 @@
 #include <nanvix/pm.h>
 #include <signal.h>
 
+
+/**
+ * @brief convert the nice priority into a number of ticket
+ * 
+ */
+EXTERN void niceToTicket(struct process *p);
+
+/**
+ * @brief change the number of ticket of all process when one is added
+ * 
+ */
+EXTERN void changeTicket(struct process *p);
+
+
 /**
  * @brief Is the system shutting down?
  */
@@ -108,6 +122,10 @@ PUBLIC void die(int status)
 	
 	sndsig(curr_proc->father, SIGCHLD);
 	
+	/*
+	changeTicket(curr_proc); //if the processus die, we need to change the associated ticket(s)
+	*/
+
 	yield();
 }
 
