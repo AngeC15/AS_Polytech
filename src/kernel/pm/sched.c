@@ -29,6 +29,11 @@
 #define NICE_MAX 40
 #define PRIORITY_COEFF 1.0
 #define NICE_COEFF 1.0
+#define QUEUES 4
+#define MAX_PPQ 100
+#define SELECTED_ALGO 5;
+
+int pow(int x, int y);
 
 /**
  * @brief Schedules a process to execution.
@@ -214,6 +219,94 @@ PUBLIC void yield2(void)
 		switch_to(next);
 }
 
+// Multiple Queues
+
+PUBLIC void yield3(void)
+{
+	struct process *p;	  /* Working process.     */
+	struct process *next; /* Next process to run. */
+
+	/* Re-schedule process for execution. */
+	if (curr_proc->state == PROC_RUNNING)
+		sched(curr_proc);
+
+	/* Remember this process. */
+	last_proc = curr_proc;
+
+	/* Check alarm. */
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip invalid processes. */
+		if (!IS_VALID(p))
+			continue;
+
+		/* Alarm has expired. */
+		if ((p->alarm) && (p->alarm < ticks))
+			p->alarm = 0, sndsig(p, SIGALRM);
+	}
+
+	struct process *queues[QUEUES][MAX_PPQ];
+	int procPerQueue[QUEUES]; /* Number of processes per queue */
+
+	/* Flush the queues */
+	for (int i = 0; i < QUEUES; i++)
+		procPerQueue[i] = 0;
+
+	/* Choosing the appropriate queue for each process using nice*/
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip non-ready process. */
+		if (p->state != PROC_READY)
+			continue;
+
+		/* Choose desired queue q for process p */
+		int q = (p->nice / (NICE_MAX / QUEUES));
+		if (q >= QUEUES)
+			q = QUEUES - 1;
+
+		/* Put the process in the chosen queue */
+		queues[q][procPerQueue[q]++] = p;
+	}
+
+	/* Choose a process to run next (Fixed priority preemptive scheduling) */
+	int isEmpty = 1;
+	next = IDLE;
+	for (int i = 0; i < QUEUES; i++)
+	{
+		for (int j = 0; j < procPerQueue[i]; j++)
+		{
+			isEmpty = 0;
+			struct process *p = queues[i][j];
+
+			/*
+			* Process with higher
+			* waiting time found.
+			*/
+			if (p->counter > next->counter)
+			{
+				next->counter++;
+				next = p;
+			}
+
+			/*
+			* Increment waiting
+			* time of process.
+			*/
+			else
+				p->counter++;
+		}
+		if (!isEmpty)
+			break;
+	}
+
+	/* Switch to next process. */
+	next->priority = PRIO_USER;
+	next->state = PROC_RUNNING;
+	next->counter = PROC_QUANTUM;
+	if (curr_proc != next)
+		switch_to(next);
+}
+
 // Fair Share
 
 PUBLIC void yield5(void)
@@ -247,25 +340,24 @@ PUBLIC void yield5(void)
 
 	if(p+1 > LAST_PROC){
 		p = FIRST_PROC;
-	}else{
-		p = curr_proc+1;;
+	}else {
+		p = curr_proc+1;
 	}
 
 	for(int i = 0; i < nProcs; i++){
 
-		if (p->state != PROC_READY){
+		if(p->state == PROC_READY){
+			next = p;
+			break;
+		}else{
 
 			if(p+1 > LAST_PROC){
 				p = FIRST_PROC;
 			}else{
 				p++;
 			}
-			continue;
 		}
-		next = p;
-		break;
 	}
-
 	
 	/* Switch to next process. */
 	next->priority = PRIO_USER;
@@ -275,8 +367,13 @@ PUBLIC void yield5(void)
 		switch_to(next);
 }
 
-void swap(int n){
-	switch (n)
+
+/**
+ * @brief Yields the processor.
+ */
+PUBLIC void yield(void)
+{	
+	switch (SELECTED_ALGO)
 	{
 	case 1:
 	yield1();
@@ -284,6 +381,10 @@ void swap(int n){
 	
 	case 2:
 	yield2();
+		break;
+	
+	case 3:
+	yield3();
 		break;
 	
 	case 5:
@@ -295,12 +396,4 @@ void swap(int n){
 	}
 
 	return;
-}
-
-/**
- * @brief Yields the processor.
- */
-PUBLIC void yield(void)
-{
-	swap(5);
 }
