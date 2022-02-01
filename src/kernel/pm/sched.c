@@ -31,7 +31,7 @@
 #define NICE_COEFF 1.0
 #define QUEUES 4
 #define MAX_PPQ 100
-#define SELECTED_ALGO 3
+#define SELECTED_ALGO 4
 
 int pow(int x, int y);
 
@@ -70,6 +70,7 @@ PUBLIC void resume(struct process *proc)
 		sched(proc);
 }
 
+// LRU
 
 PUBLIC void yield1(void)
 {
@@ -129,6 +130,7 @@ PUBLIC void yield1(void)
 }
 
 // Priority
+
 PUBLIC void yield2(void)
 {
 	struct process *p;    /* Working process.     */
@@ -165,11 +167,6 @@ PUBLIC void yield2(void)
 		if (p->state != PROC_READY)
 			continue;
 		
-		/*ratio and next ratio are both an average between nice and priority
-		We chose to focus on both. None of the two has priority over the other.
-		In order to focus on the user changes, you just need to increase NICE_COEFF 
-		at the top of the program.
-		*/
 		ratio = ((float) PRIORITY_COEFF * ((p->priority - 40) / -PRIORITY_MAX) - (float) NICE_COEFF * (p->nice / NICE_MAX)) / -2;
 		nextratio = ((float) PRIORITY_COEFF *((next->priority - 40) / -PRIORITY_MAX) - (float) NICE_COEFF * (p->nice / NICE_MAX)) / -2;
 
@@ -307,6 +304,74 @@ PUBLIC void yield3(void)
 		switch_to(next);
 }
 
+// Lottery
+
+PUBLIC void yield4(void)
+{
+	struct process *p;    /* Working process.     */
+	struct process *next; /* Next process to run. */
+
+
+	/* Re-schedule process for execution. */
+	if (curr_proc->state == PROC_RUNNING)
+		sched(curr_proc);
+
+	/* Remember this process. */
+	last_proc = curr_proc;
+
+	/* Check alarm. */
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip invalid processes. */
+		if (!IS_VALID(p))
+			continue;
+		
+		/* Alarm has expired. */
+		if ((p->alarm) && (p->alarm < ticks))
+			p->alarm = 0, sndsig(p, SIGALRM);
+	}
+
+	/* Choose a process to run next. */
+	next = IDLE;
+	int nbTicket=1;
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip non-ready process. */
+		if (p->state != PROC_READY)
+			continue;
+		nbTicket+=40-p->nice;
+	}
+
+
+	/* choose the lottery winner */
+	int winner=CURRENT_TIME % nbTicket;
+	
+	int nbSeenTickets=0;
+	for (p= FIRST_PROC; p<= LAST_PROC; p++)
+	{
+		/* Skip non-ready process */
+		if (p->state != PROC_READY)
+			continue;
+		/* Filling tickets array */
+		int priority=p->nice;
+		int nTickets=40-priority;
+		nbSeenTickets+=nTickets;
+		if(nbSeenTickets>=winner){
+			next=p;
+			break;
+		}
+	}
+	
+
+
+	/* Switch to next process. */
+	next->priority = PRIO_USER;
+	next->state = PROC_RUNNING;
+	next->counter = PROC_QUANTUM;
+	if (curr_proc != next)
+		switch_to(next);
+}
+
 // Fair Share
 
 PUBLIC void yield5(void)
@@ -385,6 +450,10 @@ PUBLIC void yield(void)
 	
 	case 3:
 	yield3();
+		break;
+	
+	case 4:
+	yield4();
 		break;
 	
 	case 5:
