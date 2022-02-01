@@ -31,7 +31,7 @@
 #define NICE_COEFF 1.0
 #define QUEUES 4
 #define MAX_PPQ 100
-#define SELECTED_ALGO 5;
+#define SELECTED_ALGO 5
 
 int pow(int x, int y);
 
