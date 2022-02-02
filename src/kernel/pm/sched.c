@@ -31,7 +31,7 @@
 #define NICE_COEFF 1.0
 #define QUEUES 4
 #define MAX_PPQ 100
-#define SELECTED_ALGO 4
+#define SELECTED_ALGO 5
 
 int pow(int x, int y);
 
@@ -376,60 +376,72 @@ PUBLIC void yield4(void)
 
 PUBLIC void yield5(void)
 {
-	struct process *p;    /* Working process.     */
-	struct process *next; /* Next process to run. */
+    struct process *p;      /* Working process.     */
+    struct process *next; /* Next process to run. */
 
-	/* Re-schedule process for execution. */
-	if (curr_proc->state == PROC_RUNNING)
-		sched(curr_proc);
+    /* Re-schedule process for execution. */
+    if (curr_proc->state == PROC_RUNNING)
+        sched(curr_proc);
 
-	/* Remember this process. */
-	last_proc = curr_proc;
+    /* Remember this process. */
+    last_proc = curr_proc;
 
-	/* Check alarm. */
-	for (p = FIRST_PROC; p <= LAST_PROC; p++)
-	{
-		/* Skip invalid processes. */
-		if (!IS_VALID(p))
-			continue;
-		
-		/* Alarm has expired. */
-		if ((p->alarm) && (p->alarm < ticks))
-			p->alarm = 0, sndsig(p, SIGALRM);
-	}
+    /* Check alarm. */
+    for (p = FIRST_PROC; p <= LAST_PROC; p++)
+    {
+        /* Skip invalid processes. */
+        if (!IS_VALID(p))
+            continue;
 
-	/* Choose a process to run next. */
-	next = IDLE;
+        /* Alarm has expired. */
+        if ((p->alarm) && (p->alarm < ticks))
+            p->alarm = 0, sndsig(p, SIGALRM);
+    }
 
-	int nProcs = LAST_PROC - FIRST_PROC + 1;
+    /* Choose a process to run next. */
+    next = IDLE;
 
-	if(p+1 > LAST_PROC){
-		p = FIRST_PROC;
-	}else {
-		p = curr_proc+1;
-	}
 
-	for(int i = 0; i < nProcs; i++){
+    /* loop for the end of the table */ 
+    for (p = curr_proc; p <= LAST_PROC; p++)
+    {
+        /* Skip non-ready process. */
+        if ((p->state != PROC_READY) || (p == curr_proc))
+        {
+            continue;
+        }
+        else
+        {
+            next = p;
+            break;
+        }
+    }
+    
+    if (next == IDLE) /* if we didn't find any next process */ 
+    {
+        /* loop for the first part of the table */ 
+        for (p = FIRST_PROC; p < curr_proc; p++)
+        {
+            /* Skip non-ready process. */
+            if (p->state != PROC_READY)
+            {
+                continue;
+            }
+            
+            else
+            {
+                next = p;
+                break;
+            }
+        }
+    }
 
-		if(p->state == PROC_READY){
-			next = p;
-			break;
-		}else{
+    next->state = PROC_RUNNING;
 
-			if(p+1 > LAST_PROC){
-				p = FIRST_PROC;
-			}else{
-				p++;
-			}
-		}
-	}
-	
-	/* Switch to next process. */
-	next->priority = PRIO_USER;
-	next->state = PROC_RUNNING;
-	next->counter = PROC_QUANTUM;
-	if (curr_proc != next)
-		switch_to(next);
+    if (curr_proc != next)
+    {
+        switch_to(next);
+    }
 }
 
 
