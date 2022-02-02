@@ -398,14 +398,14 @@ PUBLIC void yield5(void)
             p->alarm = 0, sndsig(p, SIGALRM);
     }
 
-    /* Choose a process to run next. */
+    /* Choose a process to run next */
     next = IDLE;
 
 
     /* loop for the end of the table */ 
     for (p = curr_proc; p <= LAST_PROC; p++)
     {
-        /* Skip non-ready process. */
+        /* skip first process */
         if ((p->state != PROC_READY) || (p == curr_proc))
         {
             continue;
@@ -419,10 +419,10 @@ PUBLIC void yield5(void)
     
     if (next == IDLE) /* if we didn't find any next process */ 
     {
-        /* loop for the first part of the table */ 
+        /* check the first part of the list */ 
         for (p = FIRST_PROC; p < curr_proc; p++)
         {
-            /* Skip non-ready process. */
+
             if (p->state != PROC_READY)
             {
                 continue;
