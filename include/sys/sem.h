@@ -34,4 +34,17 @@
 	extern int semctl(int, int, int);
 	extern int semop(int, int);
 
+    typedef struct sem {
+        int value;
+        struct sem **blocked_proc;
+    } semaphore, *pSemaphore;
+
+    typedef struct semArray{
+        int valide;
+        pSemaphore semaphoreCell;
+        unsigned int key;
+        int inUse;
+        int waitingProcess;
+    }semaphoreChart, *pSemaphoreChart
+
 #endif /* SEM_H_ */
