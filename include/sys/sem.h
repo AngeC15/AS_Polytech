@@ -20,6 +20,8 @@
 #ifndef SEM_H_
 #define SEM_H_
 
+#include <nanvix/pm.h>
+
 	/**
 	 * @brief Comand values for semaphores.
 	 */
@@ -36,7 +38,7 @@
 
     typedef struct sem {
         int value;
-        struct sem **blocked_proc;
+        struct process **blocked_proc;
     } semaphore, *pSemaphore;
 
     typedef struct semArray{
@@ -45,6 +47,6 @@
         unsigned int key;
         int inUse;
         int waitingProcess;
-    }semaphoreChart, *pSemaphoreChart
+    }semaphoreChart, *pSemaphoreChart;
 
 #endif /* SEM_H_ */
