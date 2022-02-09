@@ -91,3 +91,10 @@ int destroy(int idSem){
     }
     return -1;
 }
+
+pSemaphoreChart getCell(int i){
+    if ( i > MAX_SEMA || i < 0){
+        return NULL;
+    }
+    return &tabSema[i];
+}

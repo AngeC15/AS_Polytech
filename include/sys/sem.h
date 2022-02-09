@@ -52,4 +52,12 @@
         int waitingProcess;
     }semaphoreChart, *pSemaphoreChart;
 
+    //new functions
+    void resetChart();
+    int create(int n, unsigned int key);
+    int down(int idSem);
+    int up(int idSem);
+    int destroy(int idSem);
+    pSemaphoreChart getCell(int i);
+
 #endif /* SEM_H_ */
