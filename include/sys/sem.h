@@ -22,6 +22,9 @@
 
 #include <nanvix/pm.h>
 
+
+    #define MAX_SEMA 64 //the maximum of semaphore created is 64
+
 	/**
 	 * @brief Comand values for semaphores.
 	 */

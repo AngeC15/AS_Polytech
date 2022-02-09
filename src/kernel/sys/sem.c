@@ -1,8 +1,8 @@
+#include <nanvix/syscall.h>
 #include <nanvix/const.h>
 #include <sys/sem.h>
 
 
-#define MAX_SEMA 64 //the maximum of semaphore created is 64
 
 //the tab of semaphore:
 semaphoreChart tabSema[MAX_SEMA];
@@ -27,7 +27,7 @@ int create(int n, unsigned int key) {
     //check if the number max of semaphore is not reach
     if(livingSemaphore <= MAX_SEMA){
         //Create a new sempahore:
-         int i=0;
+        int i=0;
         while(tabSema[i].inUse == 1) {
             i++;
         }
@@ -57,7 +57,7 @@ int down(int idSem) {
     if(tabSema[idSem].inUse == 1){
         tabSema[idSem].waitingProcess++;
         tabSema[idSem].semaphoreCell->value--;
-        while(tabSema[idSem].semaphoreCell->value < 0){
+        while(tabSema[idSem].semaphoreCell->value <= 0){
             sleep(tabSema[idSem].semaphoreCell->blocked_proc , curr_proc->priority);
         }
         tabSema[idSem].waitingProcess--;

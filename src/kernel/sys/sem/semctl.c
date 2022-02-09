@@ -1,9 +1,11 @@
-#include <nanvix/const.h>
-#include <nanvix/sem.h>
+#include <nanvix/syscall.h>
+#include <errno.h>
 
 
-PUBLIC int sys_semctl(int idSem, int cmd, int val){
-
+int sys_semctl(int idSem, int cmd, int val){
+    idSem++;
+    cmd++;
+    val++;
 
 
 

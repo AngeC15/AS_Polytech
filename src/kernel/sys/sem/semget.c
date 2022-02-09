@@ -1,12 +1,10 @@
-#include <nanvix/const.h>
-#include <nanvix/sem.h>
-#include <sys/sem.h>
+#include <nanvix/syscall.h>
 #include <errno.h>
 
 
 
-PUBLIC int sys_semget(unsigned key){
-
+int sys_semget(unsigned key){
+    key++;
 
 
     return 0;

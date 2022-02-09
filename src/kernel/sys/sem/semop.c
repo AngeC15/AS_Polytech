@@ -1,10 +1,11 @@
-#include <nanvix/sem.h>
-#include <nanvix/const.h>
+#include <nanvix/syscall.h>
+#include <errno.h>
 
 
 
-PUBLIC int sys_semop(int idSem, int op){
-
+int sys_semop(int idSem, int op){
+    idSem++;
+    op++;
 
 
 
