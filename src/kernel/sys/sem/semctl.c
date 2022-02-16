@@ -8,13 +8,13 @@
 int sys_semctl(int idSem, int cmd, int value){
     pSemaphoreChart cell = getCell(idSem);
    
-   if( cell->valide != 1 || cell == NULL){
+   if( cell->valide != 1 || cell == NULL || cell->semaphoreCell.value > 0){
        return -1;
    }
    if(cmd == GETVAL){
-       return cell->semaphoreCell->value;
+       return cell->semaphoreCell.value;
    }else if(cmd == SETVAL){
-        cell->semaphoreCell->value = value;
+        cell->semaphoreCell.value = value;
         return 0;
    }else if(cmd == IPC_RMID){
       return destroy(idSem);

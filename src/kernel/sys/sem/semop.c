@@ -1,5 +1,6 @@
 #include <nanvix/syscall.h>
 #include <errno.h>
+#include <sys/sem.h>
 
 
 
@@ -8,7 +9,7 @@ int sys_semop(int idSem, int op){
 
     pSemaphoreChart cell = getCell(idSem);
     //check if the cell has not a null semaphore and the semaphore is valid
-    if(cell == NULL || !cell.valide){
+    if(cell == NULL || !cell->valide){
         return -1;
     }
 
@@ -31,5 +32,5 @@ int sys_semop(int idSem, int op){
 
 
 
-    return rest;
+    return res;
 }

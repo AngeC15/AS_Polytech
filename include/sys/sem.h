@@ -41,12 +41,12 @@
 
     typedef struct sem {
         int value;
-        struct process **blocked_proc;
+        struct process *blocked_proc;
     } semaphore, *pSemaphore;
 
     typedef struct semArray{
         int valide;
-        pSemaphore semaphoreCell;
+        semaphore semaphoreCell; //do not use a pointer because of the local adress used in the creation of the semaphore
         unsigned int key;
         int inUse;
         int waitingProcess;

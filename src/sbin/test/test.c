@@ -423,6 +423,12 @@ static int sched_test3(void)
  * 
  * @returns Zero if passed on test, and non-zero otherwise.
  */
+
+int semaphore_test3_bis(void){
+	//Create 2 semaphore
+	//test if the semaphore chart return good values
+	return -1;
+}
 int semaphore_test3(void)
 {
 	pid_t pid;                  /* Process ID.              */

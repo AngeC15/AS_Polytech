@@ -25,18 +25,19 @@ Create a semaphore initialized with value n
 */
 int create(int n, unsigned int key) {
     //check if the number max of semaphore is not reach
+    if(livingSemaphore == 0){
+        initChart();
+    }
     if(livingSemaphore <= MAX_SEMA){
         //Create a new sempahore:
         int i=0;
         while(tabSema[i].inUse == 1) {
             i++;
         }
-        semaphore s;
-        s.value = n;
-        s.blocked_proc = NULL; //no process blocked at the beginning
 
         tabSema[i].valide = 1;
-        tabSema[i].semaphoreCell = &s;
+        tabSema[i].semaphoreCell.value = n;
+        tabSema[i].semaphoreCell.blocked_proc = NULL;
         tabSema[i].key = key;
         tabSema[i].inUse = 1;
         tabSema[i].waitingProcess = 0;
@@ -56,9 +57,9 @@ see also up
 int down(int idSem) {
     if(tabSema[idSem].inUse == 1){
         tabSema[idSem].waitingProcess++;
-        tabSema[idSem].semaphoreCell->value--;
-        while(tabSema[idSem].semaphoreCell->value <= 0){
-            sleep(tabSema[idSem].semaphoreCell->blocked_proc , curr_proc->priority);
+        tabSema[idSem].semaphoreCell.value--;
+        while(tabSema[idSem].semaphoreCell.value <= 0){
+            sleep(&tabSema[idSem].semaphoreCell.blocked_proc , curr_proc->priority);
         }
         tabSema[idSem].waitingProcess--;
         return 0;
@@ -71,9 +72,9 @@ Free a ressource on the semaphore (add 1)
 */
 int up(int idSem) {
   if(tabSema[idSem].inUse == 1) {
-    tabSema[idSem].semaphoreCell->value++;
-    if(tabSema[idSem].waitingProcess > 0 && tabSema[idSem].semaphoreCell->value>=0) {
-      wakeup(tabSema[idSem].semaphoreCell->blocked_proc);
+    tabSema[idSem].semaphoreCell.value++;
+    if(tabSema[idSem].waitingProcess > 0 && tabSema[idSem].semaphoreCell.value>=0) {
+      wakeup(&tabSema[idSem].semaphoreCell.blocked_proc);
     }
     return 0;
   }
