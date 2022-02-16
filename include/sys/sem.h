@@ -39,11 +39,17 @@
 	extern int semctl(int, int, int);
 	extern int semop(int, int);
 
+    /*
+    A semaphore as a value and a list of blocked processus
+    */
     typedef struct sem {
         int value;
         struct process *blocked_proc;
     } semaphore, *pSemaphore;
 
+    /*
+    a cell of semaphore contains all needed to work on it
+    */
     typedef struct semArray{
         int valide;
         semaphore semaphoreCell; //do not use a pointer because of the local adress used in the creation of the semaphore

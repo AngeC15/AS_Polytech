@@ -2,7 +2,12 @@
 #include <errno.h>
 #include <sys/sem.h>
 
-
+/*
+The semop function allows to perform atomic operations incrementing
+or decrementing the variable associated with the semaphore identified by semid
+A negative value for op specifies the downw operation and a value
+positive the up operation.
+*/
 
 int sys_semop(int idSem, int op){
     //TODO when up and down are called, need to mask interruptions
