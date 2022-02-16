@@ -12,7 +12,7 @@ int livingSemaphore = 0;
 /*
 for initialization of the tab
 */
-void resetChart() {
+void initChart() {
   for(int i=0; i<MAX_SEMA; i++) {
     tabSema[i].inUse = 0;
   }

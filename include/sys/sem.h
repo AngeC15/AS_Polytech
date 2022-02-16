@@ -53,7 +53,7 @@
     }semaphoreChart, *pSemaphoreChart;
 
     //new functions
-    void resetChart();
+    void initChart(); 
     int create(int n, unsigned int key);
     int down(int idSem);
     int up(int idSem);
