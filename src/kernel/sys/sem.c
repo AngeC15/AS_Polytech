@@ -4,6 +4,7 @@
 
 
 
+
 //the tab of semaphore:
 semaphoreChart tabSema[MAX_SEMA];
 //number of semaphore currently living
@@ -58,7 +59,7 @@ int down(int idSem) {
     if(tabSema[idSem].inUse == 1){
         tabSema[idSem].waitingProcess++;
         tabSema[idSem].semaphoreCell.value--;
-        while(tabSema[idSem].semaphoreCell.value <= 0){
+        while(tabSema[idSem].semaphoreCell.value < 0){
             sleep(&tabSema[idSem].semaphoreCell.blocked_proc , curr_proc->priority);
         }
         tabSema[idSem].waitingProcess--;
