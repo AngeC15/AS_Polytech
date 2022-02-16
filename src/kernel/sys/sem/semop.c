@@ -21,16 +21,13 @@ int sys_semop(int idSem, int op){
         res = down(idSem);
         enable_interrupts();
     }else if(op == 0){
-        //do nothing
+        return -1;
     }else if(op > 0){
         //Call up
         disable_interrupts();
         res = up(idSem);
         enable_interrupts();
     }
-
-
-
 
     return res;
 }
