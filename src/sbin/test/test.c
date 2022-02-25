@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <string.h>
 
+
 /* Test flags. */
 #define EXTENDED (1 << 0)
 #define FULL     (1 << 1)
@@ -414,7 +415,12 @@ static int sched_test3(void)
 {                                                    \
 	assert(lseek((a), 0, SEEK_SET) != -1);           \
 	assert(read((a), &(b), sizeof(b)) == sizeof(b)); \
-}                                                    \
+}
+
+/**
+ * @brief Get the semaphore's value.
+ */
+#define SEM_GET(a, b) (semctl((a), GETVAL, (b)))
 
 /**
  * @brief Producer-Consumer problem with semaphores.
@@ -429,6 +435,122 @@ int semaphore_test3_bis(void){
 	//test if the semaphore chart return good values
 	return -1;
 }
+
+
+int ProdCons(void){
+	
+	pid_t pid;                  /* Process ID.              */
+	int buffer_fd;              /* Buffer file descriptor.  */
+	int empty;                  /* Empty positions.         */
+	int full;                   /* Full positions.          */
+	int mutex;                  /* Mutex.                   */
+
+	int waiting;
+
+	const int BUFFER_SIZE = 32; /* Buffer size.             */
+	const int NR_ITEMS = 512;   /* Number of items to send. */
+	/* Create buffer.*/
+	buffer_fd = open("buffer", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+	if (buffer_fd < 0)
+		return (-1);
+	
+	/* Create semaphores. */
+	SEM_CREATE(mutex, 1);
+	SEM_CREATE(empty, 2);
+	SEM_CREATE(full, 3);
+	SEM_CREATE(waiting, 4);
+	
+	/* Initialize semaphores. */
+	SEM_INIT(full, 0);
+	SEM_INIT(empty, BUFFER_SIZE);
+	SEM_INIT(mutex, 1);
+	SEM_INIT(waiting, 0);
+	
+	
+	pid = fork();
+	
+	printf("PID du processus: %d \n", pid);
+	
+
+	if(pid < 0){
+			return(-1);
+		}
+
+	// Producer.
+	else if (pid % 2 == 1 || pid == 0 ) //process with pair id are producer
+	{
+		for (int item = 0; item < NR_ITEMS; item++)
+		{	
+			//printf("Proc %d produce number: %d \n", pid, item);
+			SEM_DOWN(empty);
+			SEM_DOWN(mutex);
+			
+			PUT_ITEM(buffer_fd, item);
+				
+			SEM_UP(mutex);
+			SEM_UP(full);
+			//printf("FINISHED proc %d produce number: %d \n", pid, item);
+		}
+
+		
+	}
+	// Consumer.
+	else //other are consumer
+	{
+		int item;
+		
+		do
+		{	//printf("Proc %d consume number: %d \n", pid, item);
+			SEM_DOWN(full);
+			SEM_DOWN(mutex);
+
+			GET_ITEM(buffer_fd, item);
+
+			SEM_UP(mutex);
+			SEM_UP(empty);
+			//printf("FINISHED proc %d consume number: %d \n", pid, item);
+		} while (item != (NR_ITEMS - 1));
+	}
+
+	//RDV point for all process
+	//TODO
+	if(SEM_GET(waiting, 0) > -1){
+
+		//printf("Proc %d is waiting \n", pid);
+		SEM_DOWN(waiting);
+	}else{
+		while(SEM_GET(waiting, 0) < 0){
+			//printf("Proc %d wake up all \n", pid);
+			SEM_UP(waiting);
+		}
+	}
+
+
+	if(pid != 0){
+		//printf("Proc %d go to exit \n", pid);
+		_exit(EXIT_SUCCESS);
+	}
+	
+	//printf("Proc %d destroy sem \n", pid);
+	// Destroy semaphores. 
+	SEM_DESTROY(mutex);
+	SEM_DESTROY(empty);
+	SEM_DESTROY(full);
+	SEM_DESTROY(waiting);
+		
+	//printf("Proc %d close and unlik \n", pid);
+
+	close(buffer_fd);
+	unlink("buffer");
+	
+	//printf("Proc %d return 0 \n", pid);
+
+
+	return (0);
+
+}
+
+
 int semaphore_test3(void)
 {	
 	pid_t pid;                  /* Process ID.              */
@@ -608,6 +730,7 @@ static void usage(void)
 	printf("  fpu   Floating Point Unit Test\n");
 	printf("  io    I/O Test\n");
 	printf("  ipc   Interprocess Communication Test\n");
+	printf("  ipc2   Producer Consumer Buffer Test\n");
 	printf("  swp   Swapping Test\n");
 	printf("  sched Scheduling Test\n");
 	
@@ -659,6 +782,14 @@ int main(int argc, char **argv)
 			printf("Interprocess Communication Tests\n");
 			printf("  producer consumer [%s]\n",
 				(!semaphore_test3()) ? "PASSED" : "FAILED");
+		}
+
+		/* IPC test. */
+		else if (!strcmp(argv[i], "ipc2"))
+		{
+			printf("Interprocess Communication Tests\n");
+			printf("  producer consumer [%s]\n",
+				(!ProdCons()) ? "PASSED" : "FAILED");
 		}
 
 		/* FPU test. */
