@@ -32,7 +32,7 @@
 	
 	
 	/* Number of system calls. */
-	#define NR_SYSCALLS 51
+	#define NR_SYSCALLS 54
 	
 	/* System call numbers. */
 	#define NR_alarm     0
@@ -86,6 +86,9 @@
  	#define NR_semget   48
  	#define NR_semctl   49
  	#define NR_semop    50
+	#define NR_fenceget   51
+ 	#define NR_fencectl   52
+ 	#define NR_fenceop    53
 
 #ifndef _ASM_FILE_
 
@@ -280,6 +283,21 @@
 	increment or decrement the semaphore
 	*/
 	EXTERN int sys_semop(int idSem, int op);
+
+	/*
+	use a fence
+	*/
+	EXTERN int sys_fenceget(unsigned key);
+
+	/*
+	Control operation on the fence
+	*/
+	EXTERN int sys_fencectl(int idFence, int cmd, int val);
+
+	/*
+	increment or decrement the fence
+	*/
+	EXTERN int sys_fenceop(int idFence, int op);
 
 	
 #endif /* _ASM_FILE_ */

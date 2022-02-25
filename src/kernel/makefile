@@ -37,6 +37,7 @@ C_SRC = $(wildcard arch/$(ARCH)/*.c) \
         $(wildcard pm/*.c)           \
         $(wildcard sys/*.c)          \
 	$(wildcard sys/sem/*.c)       \
+	$(wildcard sys/fen/*.c)       \
 # Assembly source files.
 ASM_SRC = $(wildcard arch/$(ARCH)/*.S) \
           $(wildcard core/*.S)         \

@@ -76,5 +76,8 @@ PUBLIC void (*syscalls_table[NR_SYSCALLS])(void)  = {
 	(void (*)(void))&sys_gticks,
 	(void (*)(void))&sys_semget,
 	(void (*)(void))&sys_semctl,
-	(void (*)(void))&sys_semop
+	(void (*)(void))&sys_semop,
+	(void (*)(void))&sys_fenceget,
+	(void (*)(void))&sys_fencectl,
+	(void (*)(void))&sys_fenceop
 };
