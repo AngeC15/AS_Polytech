@@ -297,7 +297,7 @@
 	/*
 	increment or decrement the fence
 	*/
-	EXTERN int sys_fenceop(int idFence, int op);
+	EXTERN int sys_fenceop(int idFence);
 
 	
 #endif /* _ASM_FILE_ */
