@@ -26,10 +26,6 @@ void initChart() {
 Create a semaphore initialized with value n
 */
 int create(int n, unsigned int key) {
-    //check if the number max of semaphore is not reach
-    if(livingSemaphore == 0){
-        initChart(); //call the init of chart only for the first creation of a semaphore
-    }
     if(livingSemaphore < MAX_SEMA){
         //Create a new sempahore:
         int i=0;
