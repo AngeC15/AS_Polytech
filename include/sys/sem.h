@@ -16,14 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Nanvix. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef SEM_H_
-#define SEM_H_
-
-#include <nanvix/pm.h>
-
-
-    #define MAX_SEMA 64 //the maximum of semaphore created is 64
+#ifndef SEM_H_USER
+#define SEM_H_USER
 
 	/**
 	 * @brief Comand values for semaphores.
@@ -33,37 +27,10 @@
 	#define SETVAL   1 /**< Sets the value of a semaphore.    */
 	#define IPC_RMID 3 /**< Destroys a semaphore.            */
 	/**@}*/
-
 	/* Forward definitions. */
 	extern int semget(unsigned);
 	extern int semctl(int, int, int);
 	extern int semop(int, int);
 
-    /*
-    A semaphore as a value and a list of blocked processus
-    */
-    typedef struct sem {
-        int value;
-        struct process *blocked_proc;
-    } semaphore, *pSemaphore;
-
-    /*
-    a cell of semaphore contains all needed to work on it
-    */
-    typedef struct semArray{
-        int valide;
-        semaphore semaphoreCell; //do not use a pointer because of the local adress used in the creation of the semaphore
-        unsigned int key;
-        int inUse;
-        int waitingProcess;
-    }semaphoreChart, *pSemaphoreChart;
-
-    //new functions
-    void initChart(); 
-    int create(int n, unsigned int key);
-    int down(int idSem);
-    int up(int idSem);
-    int destroy(int idSem);
-    pSemaphoreChart getCell(int i);
-
 #endif /* SEM_H_ */
+

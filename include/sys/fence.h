@@ -25,7 +25,7 @@
     */
     typedef struct fen {
         int value; //Max proc blocked on the fence
-        struct process blocked_proc[MAX_PROC_BLOCKED];
+        struct process blocked_proc;
     } fence, *pfence;
 
     /*

@@ -9,6 +9,7 @@ fenceArray tabFence[MAX_FENCE];
 //number of fence currently living
 int livingFence = 0;
 
+
 /*
 for initialization of the tab, to make all cell not used
 */

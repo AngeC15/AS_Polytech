@@ -1,7 +1,7 @@
 #include <nanvix/syscall.h>
 #include <errno.h>
 #include <nanvix/const.h>
-#include <sys/sem.h>
+#include <nanvix/sem.h>
 
 /*
 The semctl function allows a series of control operations on the

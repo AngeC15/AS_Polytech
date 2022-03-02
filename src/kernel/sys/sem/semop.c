@@ -1,6 +1,6 @@
 #include <nanvix/syscall.h>
 #include <errno.h>
-#include <sys/sem.h>
+#include <nanvix/sem.h>
 
 /*
 The semop function allows to perform atomic operations incrementing

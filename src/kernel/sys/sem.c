@@ -1,6 +1,7 @@
 #include <nanvix/syscall.h>
 #include <nanvix/const.h>
-#include <sys/sem.h>
+#include <nanvix/sem.h>
+
 
 
 
