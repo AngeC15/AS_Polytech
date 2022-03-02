@@ -1,14 +1,14 @@
 #include <nanvix/syscall.h>
 #include <errno.h>
 #include <nanvix/const.h>
-#include <sys/fence.h>
+#include <nanvix/fence.h>
 
 
 
 int sys_fencectl(int idFen, int cmd, int value){
     pfenceArray cell = getFenceCell(idFen);
 
-   if( cell->valide != 1 || cell == NULL || cell->fenceCell.value < 0){
+   if( cell->inUse != 1 || cell == NULL || cell->fenceCell.value < 0){
        return -1;
    }
    if(cmd == GETVAL){

@@ -28,7 +28,7 @@
 #include <nanvix/syscall.h>
 #include <fcntl.h>
 #include <nanvix/sem.h>
-#include <sys/sem.h>
+#include <nanvix/fence.h>
 
 
 /**
@@ -125,6 +125,7 @@ PUBLIC void kmain(void)
 	pm_init();
 	fs_init();
 	initChart();
+	initFenceChart();
 	
 	chkout(DEVID(TTY_MAJOR, 0, CHRDEV));
 	kprintf(KERN_INFO "kout is now initialized");

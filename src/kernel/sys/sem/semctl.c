@@ -17,8 +17,8 @@ current value of the semaphore is returned
 
 int sys_semctl(int idSem, int cmd, int value){
     pSemaphoreChart cell = getCell(idSem);
-
-   if( cell->valide != 1 || cell == NULL || cell->semaphoreCell.value < 0){
+    
+   if( cell->inUse != 1 || cell == NULL || cell->semaphoreCell.value < 0){
        return -1;
    }
    if(cmd == GETVAL){

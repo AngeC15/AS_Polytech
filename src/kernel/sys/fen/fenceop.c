@@ -1,6 +1,6 @@
 #include <nanvix/syscall.h>
 #include <errno.h>
-#include <sys/fence.h>
+#include <nanvix/fence.h>
 
 /*
 The semop function allows to perform atomic operations incrementing
@@ -13,7 +13,7 @@ int sys_fenceop(int idFen){
 
     pfenceArray cell = getFenceCell(idFen);
     //check if the cell has not a null semaphore and the semaphore is valid
-    if(cell == NULL || !cell->valide){
+    if(cell == NULL || !cell->inUse){
         return -1;
     }
 
@@ -22,16 +22,11 @@ int sys_fenceop(int idFen){
 
 //if the fence doesn't have enough space to block one more proc, release all proc, else blocked
 
-    if(cell->waitingProcess < cell->fenceCell.value-1){
-        //Space available
-        disable_interrupts();
-        res = down_fence(idFen);
-        enable_interrupts();
-    }else{ //no more space available, need to free all proc
-        disable_interrupts();
-        res = up_fence(idFen);
-        enable_interrupts();
-    }
+
+    disable_interrupts();
+    res = hit_fence(idFen);
+    enable_interrupts();
+  
 
     return res;
 }

@@ -1,7 +1,7 @@
 #include <nanvix/syscall.h>
 #include <errno.h>
 #include <nanvix/const.h>
-#include <sys/fence.h>
+#include <nanvix/fence.h>
 
 /*
 The semget function allows a process to use a semaphore associated with a key ( texttt key). If no semaphore is associated with key,

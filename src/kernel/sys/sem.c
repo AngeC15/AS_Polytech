@@ -37,7 +37,6 @@ int create(int n, unsigned int key) {
             i++;
         }
         //fulfill all the field of a semaphoreCells
-        tabSema[i].valide = 1;
         tabSema[i].semaphoreCell.value = n;
         tabSema[i].semaphoreCell.blocked_proc = NULL;
         tabSema[i].key = key;
@@ -77,7 +76,7 @@ int up(int idSem) {
   if(tabSema[idSem].inUse == 1) {
     tabSema[idSem].semaphoreCell.value++;
     if(tabSema[idSem].waitingProcess > 0 && tabSema[idSem].semaphoreCell.value>=0) { //if the value is higher than 0 and there is process wich are blocked, wake up them
-      wakeup(&tabSema[idSem].semaphoreCell.blocked_proc);
+      wakeupOne(&tabSema[idSem].semaphoreCell.blocked_proc);
     }
     return 0;
   }

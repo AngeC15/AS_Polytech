@@ -1,6 +1,6 @@
 #include <nanvix/syscall.h>
 #include <nanvix/const.h>
-#include <sys/fence.h>
+#include <nanvix/fence.h>
 
 
 
@@ -36,13 +36,7 @@ int create_fence(int n, unsigned int key) {
             i++;
         }
         //fulfill all the field of a fenceCells
-        tabFence[i].valide = 1;
-        if(n > MAX_PROC_BLOCKED){
-               tabFence[i].fenceCell.value = MAX_PROC_BLOCKED;
-        }else{
-               tabFence[i].fenceCell.value = n;
-        }
-     
+        tabFence[i].fenceCell.value = n;
         tabFence[i].key = key;
         tabFence[i].inUse = 1;
         tabFence[i].waitingProcess = 0;
@@ -59,37 +53,23 @@ int create_fence(int n, unsigned int key) {
 Take a ressource on the fence idFen, could be blocking if fence's value is less than 0 (substract 1)
 see also up
 */
-int down_fence(int idFen) {
+int hit_fence(int idFen) {
     if(tabFence[idFen].inUse == 1){
-        
-        while(tabFence[idFen].fenceCell.value > tabFence[idFen].waitingProcess){ //while the fence has not a sufficient value he keeps being blocked
-            //sleep(&tabFence[idFen].fenceCell.blocked_proc , curr_proc->priority);
-            tabFence[idFen].waitingProcess++;
+        tabFence[idFen].waitingProcess++;
+        if(tabFence[idFen].waitingProcess >= tabFence[idFen].fenceCell.value){
+            //Free all proc
+            wakeup(&tabFence[idFen].fenceCell.blocked_proc);
+            tabFence[idFen].waitingProcess = 0;
+        }else{
+            //sleep the proc
+            sleep(&tabFence[idFen].fenceCell.blocked_proc , curr_proc->priority);
+
         }
         return 0;
     }
     return -1;
 }
 
-/*
-Free all ressource on the fence (add 1)
-*/
-int up_fence(int idFen) {
-  if(tabFence[idFen].inUse == 1) {
-
-    if(tabFence[idFen].waitingProcess >= tabFence[idFen].fenceCell.value ) { //if the value is higher than 0 and there is process wich are blocked, wake up them
-    int i = 0;
-        while(i < tabFence[idFen].waitingProcess){
-            //wakeup(tabFence[idFen].fenceCell.blocked_proc[i]);
-            i++;
-
-        }
-        tabFence[idFen].waitingProcess = 0;
-    }   
-    return 0;
-  }
-  return -1;
-}
 
 /*
 Destroy the fence idFen, return 0 if done, -1 if a problem happened
@@ -139,6 +119,8 @@ pfenceArray getFenceCell(int i){
     }
     return &tabFence[i];
 }
+
+
 /*
 return the int in the tab linked with the key
 */
