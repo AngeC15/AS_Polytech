@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <nanvix/syscall.h>
+#include <sys/access.h>
 
 /* Software versioning. */
 #define VERSION_MAJOR 1 /* Major version. */
@@ -31,6 +33,7 @@
 /* Program flags. */
 #define LS_ALL   001     /* Print entries starting with dot? */
 #define LS_INODE 002     /* Print inode numbers.             */
+#define LS_LONG  003      /* Print file with their right     */
 static int ls_flags = 0; /* Flags.                           */
 
 /* Name of the directory to list. */
@@ -67,7 +70,12 @@ int ls(const char *pathname)
 		/* Print inode number. */
 		if (ls_flags & LS_INODE)
 			printf("%d ", (int)dp->d_ino);
-		
+
+		/* Print inode number. */
+		if (ls_flags & LS_LONG){
+			int i = access(filename, 0);
+			printf("%d ----- i= %d ", (int)dp->d_ino, i);
+		}
 		printf("%s\n", filename);
 	}
 	closedir(dirp);
@@ -133,6 +141,10 @@ static void getargs(int argc, char *const argv[])
 		else if ((!strcmp(arg, "-i")) || (!strcmp(arg, "--inode")))
 			ls_flags |= LS_INODE;
 		
+		/* Print inode numbers. */
+		else if ((!strcmp(arg, "-l")) || (!strcmp(arg, "--long")))
+			ls_flags |= LS_LONG;
+
 		/* Display help information. */
 		else if (!strcmp(arg, "--help"))
 			usage();
