@@ -29,11 +29,12 @@
  * 
  * @returns The length of the output string.
  */
-PUBLIC int itoa(char *str, unsigned num, int base)
+PUBLIC int itoa(char *str, int num, int base)
 {
 	char *b = str;
 	char *p, *p1, *p2;
 	unsigned divisor;
+	int negative = 0 ;
 
 	if (base == 'd')
 		divisor = 10;
@@ -46,15 +47,24 @@ PUBLIC int itoa(char *str, unsigned num, int base)
 
 	p = b;
 
+	if (num < 0)
+	  {
+	    num = num * (-1) ;
+	    negative = 1 ;
+	  }	
+	
 	/* Convert number. */
 	do
 	{
-		int remainder = num % divisor;
+	  int remainder = num % divisor;
 
-		*p++ = (remainder < 10) ? remainder + '0' : 
-		                          remainder + 'a' - 10;
+	  *p++ = (remainder < 10) ? remainder + '0' : 
+	    remainder + 'a' - 10;
 	} while (num /= divisor);
 
+	if ((divisor == 10) && (negative == 1))
+	  *p++ = '-' ;	
+	
 	/* Fill up with zeros. */
 	if (divisor == 16)
 		while ((p - b) < 8)
@@ -105,7 +115,7 @@ PUBLIC int kvsprintf(char *str, const char *fmt, va_list args)
 				/* Number. */
 				case 'd':
 				case 'x':
-					str += itoa(str, va_arg(args, unsigned int), *fmt);
+					str += itoa(str, va_arg(args, int), *fmt);
 					break;
 				
 				/* String. */

@@ -31,6 +31,7 @@
 /* Program flags. */
 #define LS_ALL   001     /* Print entries starting with dot? */
 #define LS_INODE 002     /* Print inode numbers.             */
+#define LS_FP 003
 static int ls_flags = 0; /* Flags.                           */
 
 /* Name of the directory to list. */
@@ -67,6 +68,9 @@ int ls(const char *pathname)
 		/* Print inode number. */
 		if (ls_flags & LS_INODE)
 			printf("%d ", (int)dp->d_ino);
+
+		if (ls_flags & LS_FP)
+			printf("%d ");
 		
 		printf("%s\n", filename);
 	}

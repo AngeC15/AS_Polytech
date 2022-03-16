@@ -25,13 +25,14 @@
 /*
  * Converts an integer to a string.
  */
-static int itoa(char *string, unsigned num, int base)
+static int itoa(char *string, int num, int base)
 {
 	char tmp;          /* Temporary variable. */
 	char *s;           /* Working substring.  */
 	char *p, *p1, *p2; /* Working characters. */
 	unsigned divisor;  /* Base divisor.       */
-
+        int negative = 0 ;
+	
 	s = string;
 
 	if (strchr("ud", base) != NULL)
@@ -45,15 +46,24 @@ static int itoa(char *string, unsigned num, int base)
 
 	p = s;
 
+	if (num < 0)
+	  {
+	    num = num * (-1) ;
+	    negative = 1 ;
+	  }
+	
 	/* Convert number. */
 	do
 	{
-		int remainder = num % divisor;
+	  int remainder = num % divisor;
 
-		*p++ = (remainder < 10) ? remainder + '0' : 
-		                          remainder + 'a' - 10;
+	  *p++ = (remainder < 10) ? remainder + '0' : 
+	    remainder + 'a' - 10;
 	} while (num /= divisor);
 
+	if ((divisor == 10) && (negative == 1))
+	  *p++ = '-' ;
+	    
 	/* Fill up with zeros. */
 	if (divisor == 16)
 		while ((p - s) < 8)
@@ -101,7 +111,8 @@ int vsprintf(char *string, const char *format, va_list ap)
 				/* Decimal. */
 				case 'd':
 				case 'u':
-					string += itoa(string, va_arg(ap, unsigned int), *format);
+				  // string += itoa(string, va_arg(ap, unsigned int), *format);
+				  string += itoa(string, va_arg(ap, int), *format);
 					break;
 				
 				/* Hexadecimal. */
