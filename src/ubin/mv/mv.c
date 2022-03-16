@@ -155,6 +155,8 @@ int main(int argc, char *const argv[])
 	getargs(argc, argv);
 	
 	name2 = args.name2;
+
+	/* Mv */
 	
 	/* Failed to stat(). */
 	if (stat(args.name1, &st) < 0)
