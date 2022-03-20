@@ -22,6 +22,7 @@
 #include <nanvix/pm.h>
 #include <errno.h>
 #include <unistd.h>
+#include <nanvix/klib.h>
 
 /*
  * Checks user permissions for a file.
@@ -34,29 +35,39 @@ PUBLIC int sys_access(const char *path, int amode)
 	struct inode *i;  /* Underlying inode.     */
 	
 	/* Invalid test. */
-	if ((amode & (R_OK | W_OK | X_OK | F_OK)) != amode)
+	if ((amode & (R_OK | W_OK | X_OK | F_OK)) != amode){ //for the value, look at the unistd.h file
+		//kprintf("Invalide test, amod = %d\n", amode);
 		return (-EINVAL);
+	}
 	
 	name = getname(path);
 	
 	/* Failed to get name. */
-	if (name == NULL)
+	if (name == NULL){
+		//kprintf("Failed to get name, amod = %d\n", amode);
 		return (-ENOENT);
-	
+	}
+
 	i = inode_name(path);
 	
 	putname(name);
 	
 	/* Failed to get inode. */
-	if (i == NULL)
+	if (i == NULL){
+		//kprintf("failed to get inode, amod = %d\n", amode);
 		return (curr_proc->errno);
+	}
 	
 	test  = (amode & R_OK) ? MAY_READ : 0;
+	//kprintf("Test 1 vaut: %d\n", test);
 	test |= (amode & W_OK) ? MAY_WRITE : 0;
+	//kprintf("Test 2 vaut: %d\n", test);
 	test |= (amode & X_OK) ? MAY_EXEC : 0;
+	//kprintf("Test 3 vaut: %d\n", test);
 	
 	mode = permission(i->mode, i->uid, i->gid, curr_proc, test, 1);
-	
+	//kprintf("mode vaut: %d \n", mode);
+
 	inode_put(i);
 	
 	return ((test == mode) ? 0 : -EACCES);
