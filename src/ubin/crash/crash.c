@@ -10,7 +10,7 @@
 
 void crash (void)
 {   
-    /*la ram*/
+    /*accès à la RAM*/
 	int disk = open("/dev/ramdisk", O_WRONLY); 
 
 	
@@ -20,8 +20,8 @@ void crash (void)
 		exit(EXIT_FAILURE);
 	}
 
-	char *buffer = malloc(sizeof(char)*2147483647); //Allocate a huge array
-	write(disk,buffer,2147483647);
+	char *buffer = malloc(sizeof(char)*2147483647); 
+	write(disk,buffer, 2147483647);
     close(disk);
 	free(buffer);
 }
