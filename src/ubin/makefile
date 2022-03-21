@@ -48,7 +48,7 @@
 
 # Builds everything.
 all: cat chgrp chmod chown cp echo kill ln login ls mv nice pwd rm stat sync \
-	 touch tsh ps clear nim sleep panic
+	 touch tsh ps clear nim sleep panic crash
 
 # Builds cat.
 cat: 
