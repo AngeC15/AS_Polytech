@@ -3,9 +3,7 @@
 #include <stropts.h>
 #include <unistd.h>
 #include <string.h>
-
 #include <sys/utsname.h>
-
 #include <nanvix/accounts.h>
 #include <nanvix/config.h>
 #include <dev/tty.h>

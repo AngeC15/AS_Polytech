@@ -44,10 +44,11 @@
 .PHONY: nim
 .PHONY: sleep
 .PHONY: crash
+.PHONY: panic
 
 # Builds everything.
 all: cat chgrp chmod chown cp echo kill ln login ls mv nice pwd rm stat sync \
-	 touch tsh ps clear nim sleep crash
+	 touch tsh ps clear nim sleep panic
 
 # Builds cat.
 cat: 
@@ -149,6 +150,10 @@ sleep:
 crash: 
 	$(CC) $(CFLAGS) $(LDFLAGS) crash/*.c -o $(UBINDIR)/crash $(LIBDIR)/libc.a
 
+# Builds crash.
+panic: 
+	$(CC) $(CFLAGS) $(LDFLAGS) panic/*.c -o $(UBINDIR)/panic $(LIBDIR)/libc.a
+
 # Clean compilation files.
 clean:
 	@rm -f $(UBINDIR)/cat
@@ -176,3 +181,4 @@ clean:
 	@rm -f $(UBINDIR)/nim
 	@rm -f $(UBINDIR)/sleep
 	@rm -f $(UBINDIR)/crash
+	@rm -f $(UBINDIR)/panic
