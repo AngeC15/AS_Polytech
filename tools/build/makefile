@@ -27,7 +27,7 @@ CFLAGS   += -D NDEBUG
 all: useradd
 
 # Builds cp.minix.
-useradd: useradd.c
+useradd: useradd.c md5.c
 	$(CC) $(CFLAGS) $^ -o $(BINDIR)/$@
 
 # Cleans compilation files.

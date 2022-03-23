@@ -22,12 +22,11 @@
 #include <stropts.h>
 #include <unistd.h>
 #include <string.h>
-
 #include <sys/utsname.h>
-
 #include <nanvix/accounts.h>
 #include <nanvix/config.h>
 #include <dev/tty.h>
+#include "md5.h"
 
 #if (MULTIUSER == 1)
 
@@ -57,16 +56,18 @@ static int authenticate(const char *name, const char *password)
 	/* Search in the  passwords file. */
 	while (read(file, &a, sizeof(struct account)))
 	{
-		account_decrypt(a.name, USERNAME_MAX, KERNEL_HASH);
+		// account_decrypt(a.name, USERNAME_MAX, KERNEL_HASH);
 	
 		/* No this user. */
 		if (strcmp(name, a.name))
 			continue;
 			
-		account_decrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
-		
+		// account_decrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
+		printf("your name is:%s | your password is:%s\n", a.name, a.password);
 		/* Found. */
-		if (!strcmp(password, a.password))
+		char* encryptedPassword = malloc(sizeof(char)*32);
+
+		if (!strcmp((const char *)hash((char*)password, encryptedPassword), (const char *)a.password))
 		{
 			setgid(a.gid);
 			setuid(a.uid);

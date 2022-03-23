@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
-
+#include "md5.h"
 #include <accounts.h>
 
 /**
@@ -40,13 +40,21 @@ static void useradd
 	
 	/* Initialize account. */
 	strncpy(a.name, name, USERNAME_MAX);
-	strncpy(a.password, password, PASSWORD_MAX);
+	// strncpy(a.password, password, PASSWORD_MAX);
 	a.uid = uid;
 	a.gid = gid;
 	
 	/* Encrypt data. */
-	account_encrypt(a.name, USERNAME_MAX, KERNEL_HASH);
-	account_encrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
+	// account_encrypt(a.name, USERNAME_MAX, KERNEL_HASH);
+	// account_encrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
+
+
+	//Password encryption
+	char* encryptedPassword = malloc(sizeof(char)*32);
+	char* clearPassword = malloc(sizeof(char)*strlen(password));
+
+	strncpy(clearPassword, password, PASSWORD_MAX);
+	strcpy(a.password, (const char*) hash(clearPassword, encryptedPassword));
 	
 	/* Write account. */
 	fwrite(&a, sizeof(struct account), 1, file);
