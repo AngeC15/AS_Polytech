@@ -56,7 +56,6 @@ static int authenticate(const char *name, const char *password)
 	/* Search in the  passwords file. */
 	while (read(file, &a, sizeof(struct account)))
 	{
-		// account_decrypt(a.name, USERNAME_MAX, KERNEL_HASH);
 	
 		/* No this user. */
 		if (strcmp(name, a.name))
@@ -67,6 +66,7 @@ static int authenticate(const char *name, const char *password)
 		char* encryptedPassword = malloc(sizeof(char)*32);
 		if (!strcmp((const char *)hash((char*)password, encryptedPassword), (const char *)a.password))
 		{
+			free(encryptedPassword);
 			setgid(a.gid);
 			setuid(a.uid);
 			goto found;

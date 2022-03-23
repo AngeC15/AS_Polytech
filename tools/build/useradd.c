@@ -42,14 +42,12 @@ static void useradd
 	strncpy(a.name, name, USERNAME_MAX);
 	a.uid = uid;
 	a.gid = gid;
-	
-	/* Encrypt passwords. */
+
+	/* Encrypt password. */
 	char* encryptedPassword = malloc(sizeof(char)*32);
 	char* clearPassword = malloc(sizeof(char)*strlen(password));
-
 	strncpy(clearPassword, password, PASSWORD_MAX);
 	strcpy(a.password, (const char*) hash(clearPassword, encryptedPassword));
-
 	free(encryptedPassword);
 	free(clearPassword);
 	
