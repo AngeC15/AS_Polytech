@@ -40,21 +40,18 @@ static void useradd
 	
 	/* Initialize account. */
 	strncpy(a.name, name, USERNAME_MAX);
-	// strncpy(a.password, password, PASSWORD_MAX);
 	a.uid = uid;
 	a.gid = gid;
 	
-	/* Encrypt data. */
-	// account_encrypt(a.name, USERNAME_MAX, KERNEL_HASH);
-	// account_encrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
-
-
-	//Password encryption
+	/* Encrypt passwords. */
 	char* encryptedPassword = malloc(sizeof(char)*32);
 	char* clearPassword = malloc(sizeof(char)*strlen(password));
 
 	strncpy(clearPassword, password, PASSWORD_MAX);
 	strcpy(a.password, (const char*) hash(clearPassword, encryptedPassword));
+
+	free(encryptedPassword);
+	free(clearPassword);
 	
 	/* Write account. */
 	fwrite(&a, sizeof(struct account), 1, file);

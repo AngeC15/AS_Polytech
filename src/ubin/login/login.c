@@ -61,18 +61,17 @@ static int authenticate(const char *name, const char *password)
 		/* No this user. */
 		if (strcmp(name, a.name))
 			continue;
-			
-		// account_decrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
-		printf("your name is:%s | your password is:%s\n", a.name, a.password);
-		/* Found. */
-		char* encryptedPassword = malloc(sizeof(char)*32);
 
+		/* Found. */
+
+		char* encryptedPassword = malloc(sizeof(char)*32);
 		if (!strcmp((const char *)hash((char*)password, encryptedPassword), (const char *)a.password))
 		{
 			setgid(a.gid);
 			setuid(a.uid);
 			goto found;
 		}
+		free(encryptedPassword);
 	}
 
 	ret = 0;
