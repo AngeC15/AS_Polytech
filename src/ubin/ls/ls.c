@@ -74,18 +74,15 @@ int ls(const char *pathname)
 		/* Print inode number. */
 		if (ls_flags & LS_LONG){
 			/*
-			int i = access(filename, 1);
-			int i0 = access(filename, F_OK);
-			int i1 = access(filename, R_OK);
-			int i2 = access(filename, W_OK);
-			int i4 = access(filename, X_OK);
-			*/
 			char exist = (access(filename, F_OK)) == 0 ? 'e' : '-';
 			char read = (access(filename, R_OK)) == 0 ? 'r' : '-';
 			char write = (access(filename, W_OK)) == 0 ? 'w' : '-';
 			char execute = (access(filename, X_OK)) == 0 ? 'x' : '-';
 
 			printf("%d | %c%c%c%c ", (int)dp->d_ino, exist, read, write, execute);
+			*/
+			printf("this command is not deprecated, please use the stat command: stat <filename> \n");
+
 		}
 		printf("%s\n", filename);
 	}
