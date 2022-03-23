@@ -30,7 +30,7 @@
 	/**
 	 * @brief Maximum length for a password.
 	 */
-	#define PASSWORD_MAX 10
+	#define PASSWORD_MAX 21
 
 	/**
 	 * @brief User's account information.

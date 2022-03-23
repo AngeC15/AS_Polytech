@@ -21,8 +21,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+
+#include <sha1.h>
+
 #include <accounts.h>
-#include "sha1.h"
 
 /**
  * @brief Adds a user to the passwords file.
@@ -40,23 +42,16 @@ static void useradd
 	
 	/* Initialize account. */
 	strncpy(a.name, name, USERNAME_MAX);
+	strncpy(a.password, password, PASSWORD_MAX);
 	a.uid = uid;
 	a.gid = gid;
 	
 	/* Encrypt data. */
 	/* Username in clear */
 	//account_encrypt(a.name, USERNAME_MAX, KERNEL_HASH);
-
-	//account_encrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
-
 	/* Password encrypt with SHA1 */
-	char result[PASSWORD_MAX];
-	printf("Password before: %s \n SHA1 by \n", password);
-	run_hash("test");
-	printf("End of SHA1 \n");
-	//SHA1( result, password, strlen(password) );
-
-	strncpy(a.password, result, PASSWORD_MAX);
+	//char result[PASSWORD_MAX];
+	SHA1( a.password, password, strlen(password) );
 	
 	/* Write account. */
 	fwrite(&a, sizeof(struct account), 1, file);

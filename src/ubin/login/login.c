@@ -23,6 +23,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "sha1.h"
+
 #include <sys/utsname.h>
 
 #include <nanvix/accounts.h>
@@ -57,16 +59,24 @@ static int authenticate(const char *name, const char *password)
 	/* Search in the  passwords file. */
 	while (read(file, &a, sizeof(struct account)))
 	{
-		account_decrypt(a.name, USERNAME_MAX, KERNEL_HASH);
+		//account_decrypt(a.name, USERNAME_MAX, KERNEL_HASH);
 	
 		/* No this user. */
 		if (strcmp(name, a.name))
 			continue;
-			
-		account_decrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
+
+		//account_decrypt(a.password, PASSWORD_MAX, KERNEL_HASH);
+
+  		char result[PASSWORD_MAX];
+		printf("Password before: %s \n SHA1 by \n", password);
+		run_hash("test");
+		printf("End of SHA1 \n");
+
+		printf("name: %s, password: %s | enter values name: %s, password: %s\n", a.name, a.password, name, result);
+
 		
 		/* Found. */
-		if (!strcmp(password, a.password))
+		if (!strcmp(result, a.password))
 		{
 			setgid(a.gid);
 			setuid(a.uid);
