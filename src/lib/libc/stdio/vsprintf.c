@@ -112,7 +112,18 @@ int vsprintf(char *string, const char *format, va_list ap)
 				case 'd':
 				case 'u':
 					// string += itoa(string, va_arg(ap, unsigned int), *format);
-				  string += itoa(string, va_arg(ap, int), *format);
+				  string += itoa(string, va_arg(ap, int), *format);	/*
+			int i = access(filename, 1);
+			int i0 = access(filename, F_OK);
+			int i1 = access(filename, R_OK);
+			int i2 = access(filename, W_OK);
+			int i4 = access(filename, X_OK);
+			*/
+			struct stat st;
+			if (stat(filename, &st) < 0){
+				printf("stat: cannot stat()\n");
+				return (errno);
+			}
 					break;
 				
 				/* Hexadecimal. */
