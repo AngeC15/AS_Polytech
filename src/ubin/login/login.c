@@ -26,7 +26,7 @@
 #include <nanvix/accounts.h>
 #include <nanvix/config.h>
 #include <dev/tty.h>
-#include "sha1.h"
+#include "../../../include/sha1.h"
 
 #if (MULTIUSER == 1)
 
