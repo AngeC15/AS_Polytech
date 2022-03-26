@@ -23,6 +23,7 @@ void crash (void)
 	char *buffer = malloc(sizeof(char)*2147483647); 
 	write(disk,buffer, 2147483647);
     close(disk);
+	free(buffer);
 }
 
 int main(int argc, char *const argv[])
