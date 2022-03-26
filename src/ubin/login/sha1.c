@@ -1,13 +1,16 @@
 /*
- * Simple MD5 implementation
+ * Simple sha1
+ * implementation
  *
- * Compile with: gcc -o md5 md5.c
+ * Compile with: gcc -o sha1
+ * sha1
+ *.c
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include "md5.h"
+#include "sha1.h"
 
 // Constants are the integer part of the sines of integers (in radians) * 2^32.
 const uint32_t k[64] = {
@@ -53,7 +56,7 @@ uint32_t to_int32(const uint8_t *bytes)
         | ((uint32_t) bytes[3] << 24);
 }
  
-void md5(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest) {
+void sha1(const uint8_t *initial_msg, size_t initial_len, uint8_t *digest) {
  
     // These vars will contain the hash
     uint32_t h0, h1, h2, h3;
@@ -156,7 +159,8 @@ char * hash(char* password, char* encrypted) {
  
     len = strlen(msg);
  
-    md5((uint8_t*)msg, len, result);
+    sha1
+((uint8_t*)msg, len, result);
 
     // char* encrypted = malloc(sizeof(char)*32);
 

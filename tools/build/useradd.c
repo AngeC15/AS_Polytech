@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include "md5.h"
+#include "sha1.h"
 #include <accounts.h>
 
 /**
@@ -44,11 +44,11 @@ static void useradd
 	a.gid = gid;
 
 	/* Encrypt password. */
-	char* encryptedPassword = malloc(sizeof(char)*32);
-	char* clearPassword = malloc(sizeof(char)*strlen(password));
-	strncpy(clearPassword, password, PASSWORD_MAX);
-	strcpy(a.password, (const char*) hash(clearPassword, encryptedPassword));
-	free(encryptedPassword);
+	char* encryptedPassword = malloc(sizeof(char)*32);							// Allocation mémoire pour le mot de passe chiffré
+	char* clearPassword = malloc(sizeof(char)*strlen(password)); 				//Allocation mémoire pour le mot de passe en clair
+	strncpy(clearPassword, password, PASSWORD_MAX);								// copie du mdp saisi par l'utilisateur
+	strcpy(a.password, (const char*) hash(clearPassword, encryptedPassword)); 	// hachage du mdp
+	free(encryptedPassword);													// libération de la mémoire
 	free(clearPassword);
 	
 	/* Write account. */
